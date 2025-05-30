@@ -1,2 +1,156 @@
 # JPEG-Compression
 JPEG Image Compressor/Decompressor
+
+## Overview
+This project involves implementing image compression and bit-packing 
+techniques. The following files and their respective functions are part 
+of the project:
+
+### File Descriptions
+
+- **reader.c**
+    - Contains functions for reading and printing PPM and compressed 
+      image data.
+    - Functions:
+        - `read_ppm`: Reads a PPM image from a file.
+        - `print_ppm`: Prints a PPM image to stdout.
+        - `read_compressed`: Reads compressed image data from a file.
+        - `printCompressed`: Prints compressed image data to stdout.
+        - `trim_ppm`: Trims the PPM image data to ensure dimensions 
+          are even.
+        - `free_image`: Frees the allocated memory for image data.
+        - `PPM_max_value`: Returns the maximum pixel value for PPM 
+          images.
+
+- **transforms.c**
+    - Contains functions for transforming image data between different 
+      color spaces and performing various pixel operations.
+    - Functions:
+        - `rgb_to_ypbpr`: Converts RGB image data to YPbPr color space.
+        - `ypbpr_to_rgb`: Converts YPbPr image data to RGB color space.
+        - `pixelsToCoefficients`: Converts pixel values to DCT 
+          coefficients.
+        - `coefficientsToPixels`: Converts DCT coefficients to pixel 
+          values.
+        - `clamp`: Clamps a value between a minimum and maximum.
+        - `roundf`: Rounds a floating-point value to the nearest integer.
+
+- **bitpack.c**
+    - Contains functions for packing and unpacking bits.
+    - Functions:
+        - `Bitpack_fitsu`: Checks if an unsigned integer fits within 
+          the specified width.
+        - `Bitpack_fitss`: Checks if a signed integer fits within the 
+          specified width.
+        - `Bitpack_getu`: Extracts an unsigned value from a word.
+        - `Bitpack_gets`: Extracts a signed value from a word.
+        - `Bitpack_newu`: Inserts an unsigned value into a word.
+        - `Bitpack_news`: Inserts a signed value into a word.
+
+- **40image.c**
+    - Contains the main function to handle command-line arguments and 
+      call the appropriate compression or decompression functions.
+    - Functions:
+        - `main`: Parses command-line arguments and calls the 
+          appropriate function (`compress40` or `decompress40`).
+
+- **quan.c**
+    - Contains functions for quantizing and dequantizing image data.
+    - Functions:
+        - `packPixels`: Packs pixel values into a 64-bit codeword.
+        - `unpackPixels`: Unpacks pixel values from a 64-bit codeword.
+        - `constructCodeword`: Constructs a codeword from quantized 
+          values.
+        - `deconstructCodeword`: Deconstructs a codeword into quantized 
+          values.
+        - `to_little_endian`: Converts a 64-bit word to little-endian 
+          format.
+        - `chromaBlockAverages`: Computes the average chroma values for 
+          a 2x2 block.
+
+## Implementation Steps
+The implementation follows the steps outlined in the `arith.pdf` file 
+for compressing and decompressing images:
+
+1. **Reading PPM Images:**
+     - Use `read_ppm` to read the PPM image data from a file.
+     - Ensure the image dimensions are even using `trim_ppm`.
+
+2. **Color Space Conversion:**
+     - Convert the RGB image data to YPbPr color space using 
+       `rgb_to_ypbpr`.
+
+3. **Discrete Cosine Transform (DCT):**
+     - Convert the pixel values to DCT coefficients using 
+       `pixelsToCoefficients`.
+
+4. **Quantization:**
+     - Quantize the DCT coefficients and pack them into 64-bit 
+       codewords using `packPixels`.
+
+5. **Bit-Packing:**
+     - Use the functions in `bitpack.c` to pack the quantized values 
+       into a compressed format.
+
+6. **Writing Compressed Data:**
+     - Write the compressed data to a file using `printCompressed`.
+
+7. **Decompression:**
+     - Read the compressed data from a file using `read_compressed`.
+     - Unpack the 64-bit codewords using `unpackPixels`.
+     - Dequantize the values and convert them back to pixel values 
+       using `coefficientsToPixels`.
+     - Convert the YPbPr image data back to RGB using `ypbpr_to_rgb`.
+     - Print the decompressed PPM image using `print_ppm`.
+
+## Acknowledgements
+I would like to acknowledge the Computerphile on YouTube and their JPEG 
+and DCT breakdown series for providing valuable insights into image 
+compression techniques.
+
+## Implementation Status
+- **Correctly Implemented:**
+    - Reading and printing PPM images.
+    - Reading and printing compressed image data.
+    - Transforming image data between RGB and YPbPr color spaces.
+    - Packing and unpacking bits.
+    - Quantizing and dequantizing image data.
+
+- **Not Implemented:**
+    - None. All required functionalities have been implemented.
+
+## Time Spent
+- **Analyzing the problems:** Approximately 30 hours
+- **Solving the problems:** Approximately 2 hours
+
+## Description of Problems
+The project involves two main problems:
+1. **Image Compression:** Implementing functions to read, transform, 
+   and compress image data using techniques such as color space 
+   conversion and discrete cosine transform (DCT). One of the 
+   significant challenges in this part was ensuring that the 
+   transformation between different color spaces (RGB to YPbPr and 
+   vice versa) preserved as much image information as possible. This 
+   required careful handling of floating-point arithmetic and clamping 
+   values to avoid overflow or underflow. Additionally, implementing 
+   the DCT and its inverse was complex due to the mathematical 
+   intricacies involved and the need to maintain precision throughout 
+   the transformations.
+
+2. **Bit-Packing:** Implementing functions to efficiently pack and 
+   unpack bits for storing and transmitting compressed image data. 
+   This was particularly challenging because it involved working with 
+   low-level bitwise operations, which are prone to errors if not 
+   handled correctly. Writing and reading codewords, which are 64-bit 
+   representations of compressed data, was a new concept to me and 
+   required a deep understanding of how to manipulate individual bits 
+   within a word. Ensuring that the packed data could be accurately 
+   unpacked without loss of information was crucial, and debugging 
+   this part of the project was time-consuming and required meticulous 
+   attention to detail.
+
+Overall, the difficulty in keeping information intact while 
+transferring between different variable types and formats was one of 
+the more challenging aspects of the project. The provided code includes 
+detailed comments and explanations for each function, along with advice 
+on how to approach these problems.
